@@ -1,0 +1,1 @@
+NEWPUBLISH('sync', 'id:string, channel:string, method:string, headers:object, ua:string, query:object, body:object, ts:date, ip:string, files:[object]');
