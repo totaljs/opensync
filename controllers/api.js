@@ -65,45 +65,18 @@ function sync(channel) {
 	self.empty();
 
 	F.$events.sync && EMIT('sync', data);
-
-	if (MAIN.socket) {
-		for (var key in MAIN.socket.connections) {
-			client = MAIN.socket.connections[key];
-			if (!client.user.channels || client.user.channels[channel]) {
-				client.send(data);
-				stats(client.user);
-			}
-		}
-	}
-
-	for (client of MAIN.sse) {
-		if (!client.user.channels || client.user.channels[channel]) {
-			client.sse(data);
-			stats(client.user);
-		}
-	}
+	FUNC.send(data);
 
 	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
 		PUBLISH('sync', data);
 
+	if (PREF.log_requests)
+		audit(data);
 }
 
-function stats(session) {
-
-	if (!MAIN.stats[session.token])
-		MAIN.stats[session.token] = { total: 0, today: 0 };
-
-	if (MAIN.stats[session.token].total)
-		MAIN.stats[session.token].total++;
-	else
-		MAIN.stats[session.token].total = 1;
-
-	if (MAIN.stats[session.token].today)
-		MAIN.stats[session.token].today++;
-	else
-		MAIN.stats[session.token].today = 1;
-
-	MAIN.stats.save();
+function audit(msg) {
+	msg.dtcreated = msg.ts;
+	F.Fs.appendFile(PATH.databases('audit.log'), JSON.stringify(msg) + '\n', NOOP);
 }
 
 function socket() {

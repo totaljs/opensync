@@ -187,13 +187,17 @@
 			opt.element = el;
 			opt.align = 'right';
 			opt.items = [];
+			opt.items.push({ id: 'url', name: '@(Copy URL address)', icon: 'far fa-copy', classname: 'b' });
+			opt.items.push('-');
 			opt.items.push({ id: 'show', name: '@(Show token)', icon: 'fas fa-eye' });
 			opt.items.push({ id: 'copy', name: '@(Copy token)', icon: 'far fa-copy' });
 			opt.items.push({ id: 'edit', name: '@(Edit)', icon: 'fa fa-pencil' });
 			opt.items.push('-');
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-alt red' });
 			opt.callback = function(selected) {
-				if (selected.id === 'show') {
+				if (selected.id === 'url') {
+					SETTER('clipboard/copy', location.origin + '/?token=' + item.token);
+				} else if (selected.id === 'show') {
 					exports.show(el.closest('section'));
 				} else if (selected.id === 'copy') {
 					SETTER('clipboard/copy', item.token);

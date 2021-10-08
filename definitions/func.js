@@ -47,6 +47,46 @@ FUNC.preparetokens = function() {
 	}
 };
 
+FUNC.send = function(data) {
+
+	var client;
+
+	if (MAIN.socket) {
+		for (var key in MAIN.socket.connections) {
+			client = MAIN.socket.connections[key];
+			if (!client.user.channels || client.user.channels[data.channel]) {
+				client.send(data);
+				stats(client.user);
+			}
+		}
+	}
+
+	for (client of MAIN.sse) {
+		if (!client.user.channels || client.user.channels[data.channel]) {
+			client.sse(data);
+			stats(client.user);
+		}
+	}
+};
+
+function stats(session) {
+
+	if (!MAIN.stats[session.token])
+		MAIN.stats[session.token] = { total: 0, today: 0 };
+
+	if (MAIN.stats[session.token].total)
+		MAIN.stats[session.token].total++;
+	else
+		MAIN.stats[session.token].total = 1;
+
+	if (MAIN.stats[session.token].today)
+		MAIN.stats[session.token].today++;
+	else
+		MAIN.stats[session.token].today = 1;
+
+	MAIN.stats.save();
+}
+
 ON('ready', function() {
 	PREF.name && LOADCONFIG({ name: PREF.name, allow_tms: PREF.allow_tms, secret_tms: PREF.secret_tms });
 	FUNC.preparetokens();
