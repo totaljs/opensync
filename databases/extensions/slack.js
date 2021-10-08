@@ -1,4 +1,3 @@
-// Meta information
 exports.id = 'slack';
 exports.name = 'Slack';
 exports.author = 'Peter Sirka';
