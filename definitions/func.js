@@ -47,6 +47,54 @@ FUNC.preparetokens = function() {
 	}
 };
 
+FUNC.notify = function(channel, controller) {
+	var data = {};
+	data.id = UID();
+	data.channel = channel;
+	data.method = controller.req.method;
+	data.headers = controller.headers;
+	data.ua = controller.ua;
+	data.query = controller.query;
+	data.body = controller.body;
+	data.ts = new Date();
+	data.ip = controller.ip;
+	data.files = [];
+
+	var url = controller.hostname('/');
+
+	for (var file of controller.files) {
+		var fileid = HASH(file.path).toString(36);
+		var tmp = {};
+		tmp.name = file.name;
+		tmp.filename = file.filename;
+		tmp.extension = file.extension;
+		tmp.type = file.type;
+		tmp.size = file.size;
+		tmp.width = file.width;
+		tmp.height = file.height;
+		tmp.url = url + 'download/' + fileid + '.dat';
+		MAIN.files[fileid] = file;
+		data.files.push(tmp);
+		file.expire = NOW.add('1 hour');
+	}
+
+	controller.autoclear(false);
+
+	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
+		PUBLISH('sync', data);
+
+	if (PREF.log_requests)
+		audit(data);
+
+	F.$events.sync && EMIT('sync', data);
+	FUNC.send(data);
+};
+
+function audit(msg) {
+	msg.dtcreated = msg.ts;
+	F.Fs.appendFile(PATH.databases('audit.log'), JSON.stringify(msg) + '\n', NOOP);
+}
+
 FUNC.send = function(data) {
 
 	var client;

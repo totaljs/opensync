@@ -27,56 +27,7 @@ function index() {
 }
 
 function sync(channel) {
-
-	var self = this;
-	var client = null;
-	var data = {};
-
-	data.id = UID();
-	data.channel = channel;
-	data.method = self.req.method;
-	data.headers = self.headers;
-	data.ua = self.ua;
-	data.query = self.query;
-	data.body = self.body;
-	data.ts = new Date();
-	data.ip = self.ip;
-	data.files = [];
-
-	var url = self.hostname('/');
-
-	for (var file of self.files) {
-		var fileid = HASH(file.path).toString(36);
-		var tmp = {};
-		tmp.name = file.name;
-		tmp.filename = file.filename;
-		tmp.extension = file.extension;
-		tmp.type = file.type;
-		tmp.size = file.size;
-		tmp.width = file.width;
-		tmp.height = file.height;
-		tmp.url = url + 'download/' + fileid + '.dat';
-		MAIN.files[fileid] = file;
-		data.files.push(tmp);
-		file.expire = NOW.add('1 hour');
-	}
-
-	self.autoclear(false);
-	self.empty();
-
-	F.$events.sync && EMIT('sync', data);
-	FUNC.send(data);
-
-	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
-		PUBLISH('sync', data);
-
-	if (PREF.log_requests)
-		audit(data);
-}
-
-function audit(msg) {
-	msg.dtcreated = msg.ts;
-	F.Fs.appendFile(PATH.databases('audit.log'), JSON.stringify(msg) + '\n', NOOP);
+	FUNC.notify(channel, this);
 }
 
 function socket() {
