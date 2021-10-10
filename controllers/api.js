@@ -28,6 +28,7 @@ function index() {
 
 function sync(channel) {
 	FUNC.notify(channel, this);
+	this.empty();
 }
 
 function socket() {
