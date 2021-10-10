@@ -79,7 +79,8 @@ FUNC.notify = function(channel, controller) {
 	}
 
 	controller.autoclear(false);
-
+	controller.empty();
+	
 	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
 		PUBLISH('sync', data);
 
