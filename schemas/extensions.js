@@ -76,7 +76,7 @@ NEWSCHEMA('Extensions', function(schema) {
 							NEWEXTENSION(response.toString('utf8'), function(err) {
 								err && F.error(err, 'NEWEXTENSION(\'{0}\''.format(item));
 								next();
-							}, module => module.config = config);
+							}, module => module.config = config[module.id]);
 						} else
 							next();
 					});
