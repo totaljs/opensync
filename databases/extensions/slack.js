@@ -10,7 +10,7 @@ exports.make = function() {
 
 	ROUTE('POST /sync/slack/', function() {
 		var self = this;
-		if (self.body && self.body.url_verification) {
+		if (self.body && self.body.type === 'url_verification') {
 			self.json(self.body.challenge || '');
 		} else {
 			FUNC.notify('slack', self);
