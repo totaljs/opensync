@@ -11,6 +11,13 @@
 	.~PATH~ .list .meta { margin: 0 40px 0 55px; }
 	.~PATH~ .list .status i { font-size: 9px; float: left; margin: 3px 3px 0 0; }
 	.~PATH~ .list .battery { position: absolute; right: 27px; top: 55px; transform: rotate(-90deg); font-size: 16px; }
+	.~PATH~ .list button { padding: 7px 8px; border-radius: var(--radius); color: #000; border-radius: 0; border: 1px solid #E0E0E0; background-color: #FFF; font-size: 12px; border-left: 0; min-width: 90px; }
+	.~PATH~ .list button:first-child { border-top-left-radius: var(--radius); border-bottom-left-radius: var(--radius); border-left: 1px solid #E0E0E0; }
+	.~PATH~ .list button:last-child { border-top-right-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+	.~PATH~ .list button i { margin-right: 5px; }
+	.~PATH~ .list button:hover { background-color: #F9F9F9; }
+	.~PATH~ .list button:active { background-color: #F9F9F9; color: #777; }
+	.~PATH~ .list button:disabled { color: #999 !important; background-color: #F8F8F8 !important; cursor: not-allowed; border-color: #E0E0E0 !important; }
 </style>
 
 <div data-scope="~PATH~" class="~PATH~">
@@ -41,6 +48,10 @@
 								<div class="data">
 									<div>@(Version:) {{ m.version | empty }}</div>
 									<div class="hellip" title="{{ m.summary }}">{{ m.summary | empty }}</div>
+									<div class="mt10">
+										<button class="exec" data-exec="?/readme"><i class="fa fa-info-circle"></i>@(Read me)</button>
+										<button class="exec" data-exec="?/settings"{{ if !m.setup }} disabled{{ fi }}><i class="fa fa-cog"></i>@(Configure)</button>
+									</div>
 								</div>
 							</figure>
 						</div>
@@ -49,7 +60,7 @@
 						<div class="empty">
 							<i class="fa fa-database"></i>
 							<div>@(No extensions)</div>
-							<summary>@(OpenSync does not contain any extension yet)</summary>
+							<summary>@(Extensible does not contain any extension yet)</summary>
 						</div>
 					{{ fi }}
 				</script>
@@ -57,6 +68,9 @@
 		</div>
 	</div>
 </div>
+
+<div data---="importer__common.form__if:configform;url:/forms/config.html"></div>
+<div data---="importer__common.form__if:readmeform;url:/forms/readme.html"></div>
 
 <script>
 
@@ -94,10 +108,21 @@
 			opt.element = el;
 			opt.align = 'right';
 			opt.items = [];
-			opt.items.push({ id: 'download', name: '@(Download)', icon: 'fa fa-pencil' });
+
+			opt.items.push({ id: 'readme', name: '@(Read me)', icon: 'fa fa-info-circle' });
+
+			if (item.setup)
+				opt.items.push({ id: 'config', name: '@(Configure)', icon: 'fa fa-cog' });
+
+			opt.items.push('-');
+			opt.items.push({ id: 'download', name: '@(Download)', icon: 'fa fa-cloud-download' });
 			opt.items.push({ id: 'remove', name: '@(Remove)', icon: 'fas fa-trash-alt red' });
 			opt.callback = function(selected) {
-				if (selected.id === 'download') {
+				if (selected.id === 'config') {
+					exports.settings(id);
+				} else if (selected.id === 'readme') {
+					exports.readme(id);
+				} else if (selected.id === 'download') {
 					exports.download(id);
 				} else if (selected.id === 'remove') {
 					SETTER('approve/show', '@(Are you sure you want to remove "{name}" extension?)'.arg(item, 'escape'), '"far fa-trash-alt" @(Remove)', function() {
@@ -107,6 +132,23 @@
 			};
 
 			SETTER('menu/show', opt);
+		};
+
+		exports.readme = function(el) {
+			var id = el instanceof jQuery ? el.attrd2('id') : el;
+			WAPI('extensions_readme/{0} @showloading'.format(id), function(response) {
+				SET('readmeform @hideloading', { readme: response });
+				SET('common.form', 'readmeform');
+			});
+		};
+
+		exports.settings = function(el) {
+			var id = el instanceof jQuery ? el.attrd2('id') : el;
+			WAPI('config_read/{0} @showloading'.format(id), function(response) {
+				response.id = id;
+				SET('configform @reset @hideloading', response);
+				SET('common.form', 'configform');
+			});
 		};
 
 		exports.download = function(el) {
