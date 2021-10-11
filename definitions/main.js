@@ -4,5 +4,7 @@ MAIN.stats = MEMORIZE('stats');
 MAIN.files = {};
 MAIN.sse = [];
 
-if (PREF.name)
-	CONF.name = PREF.name;
+ON('ready', function() {
+	PREF.name && LOADCONFIG({ name: PREF.name, allow_tms: PREF.allow_tms, secret_tms: PREF.secret_tms });
+	FUNC.preparetokens();
+});
