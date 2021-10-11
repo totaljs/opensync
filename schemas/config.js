@@ -18,7 +18,7 @@ NEWSCHEMA('Config', function(schema) {
 		var extension = F.extensions.findItem('id', $.id);
 		if (extension) {
 			var model = {};
-			model.setup = extension.setup;
+			model.configuration = extension.configuration;
 			model.config = extension.config;
 			$.callback(model);
 		} else
