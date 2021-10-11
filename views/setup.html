@@ -23,8 +23,9 @@
 	<div data---="LAZY message__null__style:2"></div>
 	<div data---="LAZY approve"></div>
 
-	<div data---="loading" class="hidden"></div>
-	<div data---="windows__common.windows"></div>
+	<div data---="loading__null__style:2" class="hidden"></div>
+	<div data---="markdown"></div>
+
 	<div data---="navlayout__common.menu__parent:window;hide:xs" class="invisible">
 
 		<section style="background-color:#FFF">
@@ -59,7 +60,7 @@
 	<script>
 
 		WAPI({ url: QUERIFY('/setup/', NAV.query) });
-		ENV('ts', 'yyyy-MM-dd HH:mm:ss');
+		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
 		DEF.ajaxerrors = true;
 		NAV.custom();
@@ -125,6 +126,13 @@
 			SET('common.page', 'pageextensions');
 		});
 
+		ON('@flag showloading', function() {
+			SETTER('loading/show');
+		});
+
+		ON('@flag hideloading', function() {
+			SETTER('loading/hide', 800);
+		});
 	</script>
 
 </body>

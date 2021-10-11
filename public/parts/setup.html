@@ -132,11 +132,11 @@
 
 		exports.submit = function() {
 			var model = GET('? @reset');
-			WAPI('save', model, function() {
+			WAPI('save @showloading', model, function() {
 				if (NAV.query.token !== model.token)
 					location.href = location.pathname + '?token=' + model.token + '&success=1';
 				else
-					SET('NAV.query.success', 1);
+					SET('NAV.query.success @hideloading', 1);
 			});
 		};
 
