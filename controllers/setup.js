@@ -14,7 +14,7 @@ exports.install = function() {
 	ROUTE('API    @setup    -extensions_download/{id}  *Extensions   --> download');
 	ROUTE('API    @setup    -extensions_readme/{id}    *Extensions   --> readme');
 
-	ROUTE('+SOCKET /setup/  @setup');
+	ROUTE('+SOCKET /setup/  @setup', 1024);
 	ROUTE('+POST   /setup/', update, ['upload'], 1024 * 10);
 };
 
