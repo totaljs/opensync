@@ -137,7 +137,7 @@
 		exports.readme = function(el) {
 			var id = el instanceof jQuery ? el.attrd2('id') : el;
 			WAPI('extensions_readme/{0} @showloading'.format(id), function(response) {
-				SET('readmeform @hideloading', { readme: response });
+				SET('readmeform @hideloading', { readme: (response || '').format(location.origin) });
 				SET('common.form', 'readmeform');
 			});
 		};
