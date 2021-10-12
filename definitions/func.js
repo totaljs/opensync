@@ -47,6 +47,13 @@ FUNC.preparetokens = function() {
 	}
 };
 
+FUNC.saveconfig = function() {
+	var config = {};
+	for (var item of F.extensions)
+		config[item.id] = item.config;
+	F.Fs.writeFile(PATH.databases('extensions.json'), JSON.stringify(config), NOOP);
+};
+
 FUNC.notify = function(channel, controller) {
 	var data = {};
 	data.id = UID();
