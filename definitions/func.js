@@ -57,6 +57,15 @@ FUNC.saveconfig = function() {
 FUNC.notify = function(channel, controller) {
 	var data = {};
 	data.id = UID();
+
+	if (controller.headers) {
+		var type = controller.headers['content-type'] || '';
+		var index = type.indexOf(';');
+		if (index !== -1)
+			type = type.substring(0, index);
+		data.type = type;
+	}
+
 	data.channel = channel;
 	data.method = controller.req.method;
 	data.headers = controller.headers;

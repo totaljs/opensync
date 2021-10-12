@@ -5,12 +5,12 @@ exports.install = function() {
 
 	// Sync
 	ROUTE('GET      /sync/{channel}/', sync);
-	ROUTE('PATCH    /sync/{channel}/', sync, 1024 * 2);
-	ROUTE('POST     /sync/{channel}/', sync, 1024 * 2);
+	ROUTE('PATCH    /sync/{channel}/', sync, ['raw'],    1024 * 2);
+	ROUTE('POST     /sync/{channel}/', sync, ['raw'],    1024 * 2);
 	ROUTE('POST     /sync/{channel}/', sync, ['upload'], 1024 * 50);
-	ROUTE('PUT      /sync/{channel}/', sync, 1024 * 2);
+	ROUTE('PUT      /sync/{channel}/', sync, ['raw'],    1024 * 2);
 	ROUTE('PUT      /sync/{channel}/', sync, ['upload'], 1024 * 50);
-	ROUTE('DELETE   /sync/{channel}/', sync, 1024 * 2);
+	ROUTE('DELETE   /sync/{channel}/', sync, ['raw'],    1024 * 2);
 
 	// Index
 	ROUTE('GET /', index);
@@ -27,6 +27,15 @@ function index() {
 }
 
 function sync(channel) {
+
+	var $ = this;
+	var type = $.headers['content-type'] || '';
+	var body = $.body instanceof Buffer ? $.body.toString('utf8') : '';
+
+	if (body && type.indexOf('/json') !== -1)
+		body = DEF.parsers.json(body);
+
+	$.body = body;
 	FUNC.notify(channel, this);
 	this.empty();
 }
