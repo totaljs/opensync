@@ -38,15 +38,7 @@ NEWSCHEMA('Setup', function(schema) {
 		LOADCONFIG({ name: model.name, allow_tms: model.allow_tms, secret_tms: model.secret_tms });
 		$.success();
 		FUNC.preparetokens();
-
-		if (MAIN.socket) {
-			for (var key in MAIN.socket.connections) {
-				var conn = MAIN.socket.connections[key];
-				if (!MAIN.tokens[conn.user.token] && conn.user.token !== PREF.token)
-					conn.close(4001);
-			}
-		}
-
+		MAIN.socket && MAIN.socket.sendmeta();
 	});
 
 	schema.setRead(function($) {
@@ -72,6 +64,18 @@ NEWSCHEMA('Setup', function(schema) {
 			data.memory = 0;
 			data.usage = 0;
 		}
+		$.callback(data);
+	});
+
+	schema.addWorkflow('clients', function($) {
+
+		var data = [];
+
+		for (var key in MAIN.socket.connections) {
+			var client = MAIN.socket.connections[key];
+			data.push({ id: key, token: client.user.token, sa: client.user.sa, ip: client.ip, latency: client.latency, dtconnected: client.dtconnected });
+		}
+
 		$.callback(data);
 	});
 

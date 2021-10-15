@@ -42,6 +42,7 @@
 				<div data---="viewbox__null__parent:auto;margin:95;scrollbar:0;visible:0">
 					<nav data---="selected__NAV.url__selector:div">
 						<div class="exec" data-exec="common/page" data-if="/"><i class="fa fa-cog"></i>@(Setup)</div>
+						<div class="exec" data-exec="common/page" data-if="/clients/"><i class="fas fa-network-wired"></i>@(Clients)</div>
 						<div class="exec" data-exec="common/page" data-if="/extensions/"><i class="fa fa-plug"></i>@(Extensions)</div>
 					</nav>
 				</div>
@@ -51,6 +52,7 @@
 		<main style="background-color:#FFF;border-left:1px solid #E0E0E0">
 			<div data---="part__common.page__if:pagesetup;url:/parts/setup.html;reload:?/reload;autofocus:1" class="invisible"></div>
 			<div data---="part__common.page__if:pageextensions;url:/parts/extensions.html;reload:?/reload" class="invisible"></div>
+			<div data---="part__common.page__if:pageclients;url:/parts/clients.html;init:?/init" class="invisible"></div>
 		</main>
 
 	</div>
@@ -63,6 +65,8 @@
 		ENV('ts', '@(yyyy-MM-dd HH:mm:ss)');
 
 		DEF.ajaxerrors = true;
+		DEF.repeatfocus = false;
+
 		NAV.custom();
 
 		var common = {};
@@ -126,6 +130,10 @@
 			SET('common.page', 'pageextensions');
 		});
 
+		ROUTE('/clients/', function() {
+			SET('common.page', 'pageclients');
+		});
+
 		ON('@flag showloading', function() {
 			SETTER('loading/show');
 		});
@@ -133,6 +141,7 @@
 		ON('@flag hideloading', function() {
 			SETTER('loading/hide', 800);
 		});
+
 	</script>
 
 </body>
