@@ -32,8 +32,12 @@ function sync(channel) {
 	var type = $.headers['content-type'] || '';
 	var body = $.body instanceof Buffer ? $.body.toString('utf8') : '';
 
-	if (body && type.indexOf('/json') !== -1)
-		body = DEF.parsers.json(body);
+	if (body) {
+		if (type.lastIndexOf('/json') !== -1)
+			body = DEF.parsers.json(body);
+		else if (type.lastIndexOf('/x-www-form-urlencoded') !== -1)
+			body = DEF.parsers.urlencoded(body);
+	}
 
 	$.body = body;
 	FUNC.notify(channel, this);
