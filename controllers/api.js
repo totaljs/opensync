@@ -61,6 +61,19 @@ function socket() {
 		client.dtconnected = new Date();
 		self.sendmeta(client);
 	});
+
+	self.on('message', function(client, msg) {
+		if (msg) {
+			switch (msg.TYPE || msg.type) {
+				case 'notify':
+					if (msg.channel) {
+						client.body = msg.body == null ? msg.data : msg.body;
+						FUNC.notify(msg.channel, client);
+					}
+					break;
+			}
+		}
+	});
 }
 
 function download(req, res) {

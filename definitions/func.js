@@ -9,7 +9,6 @@ FUNC.preparetokens = function() {
 	MAIN.tokens = {};
 	if (PREF.tokens) {
 		for (var token of PREF.tokens) {
-
 			var obj = CLONE(token);
 			if (obj.channels && obj.channels.length) {
 				var tmp = {};
@@ -18,7 +17,6 @@ FUNC.preparetokens = function() {
 				obj.channels = tmp;
 			} else
 				obj.channels = null;
-
 			MAIN.tokens[obj.token] = obj;
 		}
 	}
@@ -58,7 +56,9 @@ FUNC.notify = function(channel, controller) {
 	var data = {};
 	data.id = UID();
 
-	if (controller.headers) {
+	if (controller.isWebSocket) {
+		data.type = 'application/json';
+	} else if (controller.headers) {
 		var type = controller.headers['content-type'] || '';
 		var index = type.indexOf(';');
 		if (index !== -1)
@@ -67,34 +67,34 @@ FUNC.notify = function(channel, controller) {
 	}
 
 	data.channel = channel;
-	data.method = controller.req.method;
-	data.headers = controller.headers;
+	data.method = controller.isWebSocket ? 'SOCKET' : controller.req.method;
+	data.headers = controller.isWebSocket ? EMPTYOBJECT : controller.headers;
 	data.ua = controller.ua;
-	data.query = controller.query;
+	data.query = controller.isWebSocket ? EMPTYOBJECT : controller.query;
 	data.body = controller.body;
 	data.ts = new Date();
 	data.ip = controller.ip;
 	data.files = [];
 
-	var url = controller.hostname('/');
-
-	for (var file of controller.files) {
-		var fileid = HASH(file.path).toString(36);
-		var tmp = {};
-		tmp.name = file.name;
-		tmp.filename = file.filename;
-		tmp.extension = file.extension;
-		tmp.type = file.type;
-		tmp.size = file.size;
-		tmp.width = file.width;
-		tmp.height = file.height;
-		tmp.url = url + 'download/' + fileid + '.dat';
-		MAIN.files[fileid] = file;
-		data.files.push(tmp);
-		file.expire = NOW.add('1 hour');
+	if (!controller.isWebSocket) {
+		var url = controller.hostname('/');
+		for (var file of controller.files) {
+			var fileid = HASH(file.path).toString(36);
+			var tmp = {};
+			tmp.name = file.name;
+			tmp.filename = file.filename;
+			tmp.extension = file.extension;
+			tmp.type = file.type;
+			tmp.size = file.size;
+			tmp.width = file.width;
+			tmp.height = file.height;
+			tmp.url = url + 'download/' + fileid + '.dat';
+			MAIN.files[fileid] = file;
+			data.files.push(tmp);
+			file.expire = NOW.add('1 hour');
+		}
+		controller.autoclear(false);
 	}
-
-	controller.autoclear(false);
 
 	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
 		PUBLISH('sync', data);
