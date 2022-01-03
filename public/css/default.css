@@ -1,6 +1,6 @@
 html,body { margin: 0; padding: 0; overflow: hidden !important; height: 100%; background-color: #FFF; }
 
-section header { height: 50px; border-bottom: 1px solid #E0E0E0; line-height: 49px; padding: 0 20px; font-weight: bold; }
+section header { height: 50px; border-bottom: 1px solid #E0E0E0; line-height: 49px; padding: 0 10px; font-weight: bold; }
 section header label { font-weight: bold; }
 section header label i { margin-right: 8px; }
 section header .consumption { float: right; font-size: 11px; font-weight: normal; color: #777; }
