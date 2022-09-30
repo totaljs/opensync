@@ -75,7 +75,7 @@ NEWSCHEMA('Setup', function(schema) {
 			for (var key in MAIN.socket.connections) {
 				var client = MAIN.socket.connections[key];
 				var token = MAIN.tokens[client.user.token];
-				data.push({ id: key, token: token ? token.name : client.user.token, name: client.query.name || client.query.app || '', sa: client.user.sa, ip: client.ip, latency: client.latency || 0, dtconnected: client.dtconnected });
+				data.push({ id: key, token: token ? token.name : PREF.token === client.user.token ? 'Root' : client.user.token, name: client.query.name || client.query.app || '', sa: client.user.sa, ip: client.ip, latency: client.latency || 0, dtconnected: client.dtconnected });
 			}
 		}
 
