@@ -2,23 +2,27 @@
 	<header>
 		<label><i class="fa fa-plug"></i>@(Online clients)</label>
 	</header>
-	<div data---="viewbox__common.page__parent:auto;margin:110;scrollbar:1;visibleY:0" class="invisible">
+	<div data---="viewbox__common.page__parent:auto;margin:50;scrollbar:1;visibleY:0" class="invisible">
 		<div class="padding">
 			<div class="listing2" data-bind="?__template__changed">
 				<script type="text/html">
 					{{ if value && value.length }}
 						{{ foreach m in value }}
-							<figure>
-								<section class="exec2" data-exec2="?/show">
+							<figure style="cursor:default">
+								<section>
 									<div class="b"><i class="fas fa-laptop mr5"></i>{{ m.ip }}</div>
 									<div class="mt5">
 										<div class="keyvalue small">
+											<span>@(App name)</span>
+											<div class="b">{{ m.name | empty }}</div>
+										</div>
+										<div class="keyvalue small">
 											<span>@(Access token)</span>
-											<div><span class="token b monospace" data-backup="{{ m.token }}">***********************</span></div>
+											<div>{{ m.token }}</div>
 										</div>
 										<div class="keyvalue small">
 											<span>@(Latency)</span>
-											<div>{{ m.latency | empty }} ms</div>
+											<div>{{ m.latency }} ms</div>
 										</div>
 										<div class="keyvalue small">
 											<span>@(Connected)</span>
@@ -47,14 +51,6 @@
 
 		exports.refresh = function() {
 			WAPI('clients', '?');
-		};
-
-		exports.show = function(el) {
-			el = el.find('.token');
-			var current = el.text();
-			var old = el.attrd('backup');
-			el.attrd('backup', current);
-			el.text(old)
 		};
 
 		exports.init = function() {
