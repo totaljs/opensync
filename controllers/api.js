@@ -39,9 +39,12 @@ function sync(channel) {
 			body = DEF.parsers.urlencoded(body);
 	}
 
-	$.body = body;
-	FUNC.notify(channel, this);
-	this.empty();
+	TRANSFORM(channel, body, function(err, response) {
+		$.body = response;
+		FUNC.notify(channel, $);
+		$.empty();
+	});
+
 }
 
 function socket() {

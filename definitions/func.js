@@ -96,14 +96,22 @@ FUNC.notify = function(channel, controller) {
 		controller.autoclear(false);
 	}
 
-	if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
-		PUBLISH('sync', data);
+	TRANSFORM('notify', data, function(err) {
 
-	if (PREF.log_requests)
-		audit(data);
+		if (err)
+			return;
 
-	F.$events.sync && EMIT('sync', data);
-	FUNC.send(data);
+		if (CONF.allow_tms && F.tms.publish_cache.sync && F.tms.publishers.sync)
+			PUBLISH('sync', data);
+
+		if (PREF.log_requests)
+			audit(data);
+
+		F.$events.sync && EMIT('sync', data);
+		FUNC.send(data);
+
+	});
+
 };
 
 function audit(msg) {
